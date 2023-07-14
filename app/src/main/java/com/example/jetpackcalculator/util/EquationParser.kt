@@ -1,7 +1,5 @@
 package com.example.jetpackcalculator.util
 
-import androidx.core.text.isDigitsOnly
-
 class EquationParser(val equation: String) {
 
     private var generatedOperatorToken = ArrayDeque<String>()
@@ -10,7 +8,7 @@ class EquationParser(val equation: String) {
     private data class Operator(var symbol: String, var precendence: Int)
     data class ValidationResult(var isSuccess: Boolean, var message: String)
 
-    private var _characterValidationResult = ValidationResult(false, "")
+    private var _characterValidationResult = ValidationResult(false ,"")
     val characterValidationResult: ValidationResult get() = _characterValidationResult
 
     private var _parenthesisValidationResult = ValidationResult(false, "")
@@ -19,6 +17,25 @@ class EquationParser(val equation: String) {
     private val validCharacters = listOf<String>("x","-","+","/", "*", ".", "(", ")")
 
     fun evaluate(): Float {
+
+        // Optimisation purposes.
+        if(!parenthesisValidationResult.isSuccess ||
+            !characterValidationResult.isSuccess) {
+
+            validateCharacters()
+
+            if(!_characterValidationResult.isSuccess) {
+                throw RuntimeException(_characterValidationResult.message)
+            }
+
+            validateParenthesis()
+
+            if(!_parenthesisValidationResult.isSuccess) {
+                throw RuntimeException(_parenthesisValidationResult.message)
+            }
+        }
+
+
         val slicedEquation = equationSlicer(equation)
 
         slicedEquation.forEach {
@@ -209,12 +226,12 @@ class EquationParser(val equation: String) {
         trimmedEquation.forEach {
             if(!it.isDigit()){
                 if(it.lowercase().toString() !in validCharacters){
-                    _characterValidationResult = ValidationResult(false, "Invalid character found: $it")
+                    _characterValidationResult = ValidationResult(false,"Invalid character found: $it")
                     return
                 }
             }
         }
-        _characterValidationResult = ValidationResult(true, "Success")
+        _characterValidationResult = ValidationResult(true,"Success")
     }
 
     fun validateParenthesis() {
@@ -245,9 +262,9 @@ class EquationParser(val equation: String) {
         }
 
         if(parenthesis.size > 0) {
-            _parenthesisValidationResult = ValidationResult(false, "Invalid parenthesis found")
+            _parenthesisValidationResult = ValidationResult(false,"Invalid parenthesis found")
         }else {
-            _parenthesisValidationResult = ValidationResult(true, "Success")
+            _parenthesisValidationResult = ValidationResult(true,"Success", )
         }
     }
 }

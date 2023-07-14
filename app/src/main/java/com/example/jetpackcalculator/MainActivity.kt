@@ -3,6 +3,7 @@ package com.example.jetpackcalculator
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,20 +20,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
 import com.example.jetpackcalculator.ui.theme.JetPackCalculatorTheme
+import com.example.jetpackcalculator.ui.view.CalculatorScreen
+import com.example.jetpackcalculator.viewmodel.CalculatorViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             JetPackCalculatorTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    CalculatorScreen()
-                }
+                val viewModel: CalculatorViewModel by viewModels()
+                val state = viewModel.state
+
+                CalculatorScreen(state = state, onClickEvent = viewModel::getInput)
+
             }
         }
     }
@@ -40,84 +42,5 @@ class MainActivity : ComponentActivity() {
 
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CalculatorTextInput() {
-    val textState = remember { mutableStateOf(TextFieldValue()) }
-    TextField(
-        value = textState.value,
-        onValueChange = { textState.value = it }
-    )
-}
 
-@Composable
-fun CalCulatorButton(label: String, onClickEvent: ()-> Unit ,modifier: Modifier = Modifier) {
-    Button(
-        onClick = onClickEvent,
-    ) {
-       Text(text = label)
-    }
-}
 
-@Composable
-fun CalculatorButtonContainer(modifier: Modifier = Modifier, onClickEvent: ()-> Unit) {
-    Column() {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            CalCulatorButton(label = "C", onClickEvent)
-            CalCulatorButton(label = "()", onClickEvent)
-            CalCulatorButton(label = "%", onClickEvent)
-            CalCulatorButton(label = "/", onClickEvent)
-        }
-
-        Row() {
-            CalCulatorButton(label = "7", onClickEvent)
-            CalCulatorButton(label = "8", onClickEvent)
-            CalCulatorButton(label = "X", onClickEvent)
-        }
-
-        Row() {
-            CalCulatorButton(label = "4", onClickEvent)
-            CalCulatorButton(label = "5", onClickEvent)
-            CalCulatorButton(label = "6", onClickEvent)
-            CalCulatorButton(label = "-", onClickEvent)
-        }
-
-        Row() {
-            CalCulatorButton(label = "1", onClickEvent)
-            CalCulatorButton(label = "2", onClickEvent)
-            CalCulatorButton(label = "3", onClickEvent)
-            CalCulatorButton(label = "+", onClickEvent)
-        }
-
-        Row() {
-            CalCulatorButton(label = "+/-", onClickEvent)
-            CalCulatorButton(label = "0", onClickEvent)
-            CalCulatorButton(label = ".", onClickEvent)
-
-        }
-    }
-}
-
-@Composable
-fun CalculatorScreen(modifier: Modifier = Modifier){
- Column {
-     CalculatorTextInput()
-     //CalculatorButtonContainer()
- }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    JetPackCalculatorTheme {
-        CalculatorScreen()
-    }
-}
