@@ -20,20 +20,14 @@ class CalculatorViewModel: ViewModel() {
         private set
 
     fun getCalculatorAction(calculatorAction: CalculatorAction) {
-
         when(calculatorAction) {
             is RemoveCommand -> {
                 when(calculatorAction.type) {
                     CalculatorRemoveCommand.DEL -> {
-                        if(!state.equation.isEmpty()) {
-                            state = state.copy(equation = state.equation
-                                .removeRange( state.equation.length - 1
-                                    , state.equation.length)
-                            )
-                        }
+                        deleteCharacterFromEquation()
                     }
                     else -> {
-                        state = state.copy(equation = "", result = "0.0")
+                        clearValues()
                     }
                 }
             }
@@ -44,53 +38,81 @@ class CalculatorViewModel: ViewModel() {
                             val lastDigit = state.equation.last()
                             if (lastDigit.isDigit()) {
                                 if (state.equation.endsWith("(-$lastDigit")) {
-                                    state = state.copy(
-                                        equation = state.equation
-                                            .removeRange(
-                                                state.equation.length - 3,
-                                                state.equation.length
-                                            )
-                                            .plus(lastDigit)
-                                    )
+                                    turnNegativeNumberToPositive(lastDigit)
                                 }else {
-                                    state = state.copy(
-                                        equation = state.equation
-                                            .removeRange(
-                                                state.equation.length - 1,
-                                                state.equation.length
-                                            )
-                                            .plus("(-$lastDigit")
-                                    )
+                                    turnPositiveNumberToNegative(lastDigit)
                                 }
                             }
                         }
                     }
                     else -> {
-                        state = state.copy(equation = state.equation
-                            .plus(calculatorAction.type.value)
-                        )
+                        generateEquationFromAction(calculatorAction)
                     }
                 }
             }
-
             is Operation -> {
                 when(calculatorAction.type) {
                     CalculatorOperator.EQUALS -> {
                         calculate()
                     }
                     else -> {
-                        state = state.copy(equation = state.equation
-                            .plus(calculatorAction.type.value)
-                        )
+                        generateEquationFromAction(calculatorAction)
                     }
                 }
             }
-
             is Parethesis -> {
-                state = state.copy(equation = state.equation
-                    .plus(calculatorAction.type.value)
-                )
+                generateEquationFromAction(calculatorAction)
             }
+        }
+    }
+
+    private fun clearValues() {
+        state = state.copy(equation = "", result = "0.0")
+    }
+
+    private fun turnPositiveNumberToNegative(lastDigit: Char) {
+        state = state.copy(
+            equation = state.equation
+                .removeRange(
+                    state.equation.length - 1,
+                    state.equation.length
+                )
+                .plus("(-$lastDigit")
+        )
+    }
+
+    private fun turnNegativeNumberToPositive(lastDigit: Char) {
+        state = state.copy(
+            equation = state.equation
+                .removeRange(
+                    state.equation.length - 3,
+                    state.equation.length
+                )
+                .plus(lastDigit)
+        )
+    }
+
+    private fun generateEquationFromAction(calculatorAction: CalculatorAction) {
+        val value = when(calculatorAction) {
+            is Number -> calculatorAction.type.value
+            is Parethesis -> calculatorAction.type.value
+            is RemoveCommand -> calculatorAction.type.value
+            is Operation -> calculatorAction.type.value
+        }
+        state = state.copy(
+            equation = state.equation
+                .plus(value)
+        )
+    }
+
+    private fun deleteCharacterFromEquation() {
+        if (!state.equation.isEmpty()) {
+            state = state.copy(
+                equation = state.equation
+                    .removeRange(
+                        state.equation.length - 1, state.equation.length
+                    )
+            )
         }
     }
 
