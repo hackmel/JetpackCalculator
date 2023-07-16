@@ -37,7 +37,7 @@ class CalculatorViewModel: ViewModel() {
                         if (!state.equation.isEmpty()) {
                             val lastDigit = state.equation.last()
                             if (lastDigit.isDigit()) {
-                                if (state.equation.endsWith("(-$lastDigit")) {
+                                if (isNegative()) {
                                     turnNegativeNumberToPositive(lastDigit)
                                 }else {
                                     turnPositiveNumberToNegative(lastDigit)
@@ -70,25 +70,56 @@ class CalculatorViewModel: ViewModel() {
         state = state.copy(equation = "", result = "0.0")
     }
 
+    private fun isNegative(): Boolean{
+        val  equation = state.equation
+        for (i in state.equation.length -1 downTo 0) {
+            if(!equation[i].isDigit() &&
+                equation[i].toString() != ".") {
+                return (i > 0 &&
+                        equation[i].toString() == "-"
+                        && equation[i-1].toString() =="("
+                        )
+            }
+        }
+
+        return false
+    }
+
+    private fun parseLastDigit():Pair<Int, String> {
+        val  equation = state.equation
+        var parsedDigit = ""
+        var index = 0
+        for (i in state.equation.length -1 downTo 0) {
+            if(equation[i].isDigit() || equation[i].toString() == ".") {
+                parsedDigit = equation[i].plus(parsedDigit)
+            }else {
+                index = i + 1
+                break
+            }
+        }
+        return Pair(index, parsedDigit)
+    }
     private fun turnPositiveNumberToNegative(lastDigit: Char) {
+        val (index,parsedDigit) = parseLastDigit()
         state = state.copy(
             equation = state.equation
                 .removeRange(
-                    state.equation.length - 1,
+                    index,
                     state.equation.length
                 )
-                .plus("(-$lastDigit")
+                .plus("(-$parsedDigit")
         )
     }
 
     private fun turnNegativeNumberToPositive(lastDigit: Char) {
+        val (index,parsedDigit) = parseLastDigit()
         state = state.copy(
             equation = state.equation
                 .removeRange(
-                    state.equation.length - 3,
+                    index - 2,
                     state.equation.length
                 )
-                .plus(lastDigit)
+                .plus(parsedDigit)
         )
     }
 
