@@ -14,6 +14,7 @@ import com.example.jetpackcalculator.model.CalculatorOperator
 import com.example.jetpackcalculator.model.CalculatorRemoveCommand
 import com.example.jetpackcalculator.model.CalculatorState
 import com.example.jetpackcalculator.util.EquationParser
+import java.text.DecimalFormat
 
 class CalculatorViewModel: ViewModel() {
     var state by mutableStateOf(CalculatorState("", "0.00"))
@@ -148,12 +149,13 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun calculate() {
+        val numberFormat = DecimalFormat("#,###.00")
         val parser = EquationParser(state.equation)
         parser.validateCharacters()
         parser.validateParenthesis()
         if(parser.characterValidationResult.isSuccess &&
             parser.parenthesisValidationResult.isSuccess) {
-            state = state.copy(result = parser.evaluate().toString())
+            state = state.copy(result = numberFormat.format(parser.evaluate()))
         }else {
             state = state.copy(result = "There is a problem with the equation. Please try again")
         }

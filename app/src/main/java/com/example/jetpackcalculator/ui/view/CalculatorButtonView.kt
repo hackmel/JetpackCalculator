@@ -1,10 +1,18 @@
 package com.example.jetpackcalculator.ui.view
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.magnifier
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.jetpackcalculator.model.CalculatorAction
 import com.example.jetpackcalculator.model.CalculatorAction.RemoveCommand
 import com.example.jetpackcalculator.model.CalculatorAction.Parethesis
@@ -14,16 +22,18 @@ import com.example.jetpackcalculator.model.CalculatorNumeric
 import com.example.jetpackcalculator.model.CalculatorParenthesis
 import com.example.jetpackcalculator.model.CalculatorOperator
 import com.example.jetpackcalculator.model.CalculatorRemoveCommand
+import com.example.jetpackcalculator.model.CalculatorState
 import com.example.jetpackcalculator.ui.view.components.CalculatorButton
-
-
 
 @Composable
 fun CalculatorButtonContainer(modifier: Modifier = Modifier,
                               onClickAction: (value: CalculatorAction) -> Unit) {
 
-    Column() {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+    Column(
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth().padding(10.dp)) {
             CalculatorButton(label = "C", {
                 onClickAction(RemoveCommand(CalculatorRemoveCommand.CLEAR))
             })
@@ -37,7 +47,9 @@ fun CalculatorButtonContainer(modifier: Modifier = Modifier,
             })
         }
 
-        Row() {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(10.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly) {
             CalculatorButton(label = "7",  {
                 onClickAction(Number(CalculatorNumeric.SEVEN))
             })
@@ -52,7 +64,9 @@ fun CalculatorButtonContainer(modifier: Modifier = Modifier,
             })
         }
 
-        Row() {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(10.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly) {
             CalculatorButton(label = "4", {
                 onClickAction(Number(CalculatorNumeric.FOUR))
             })
@@ -67,7 +81,9 @@ fun CalculatorButtonContainer(modifier: Modifier = Modifier,
             })
         }
 
-        Row() {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(10.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly) {
             CalculatorButton(label = "1", {
                 onClickAction(Number(CalculatorNumeric.ONE))
             })
@@ -82,10 +98,9 @@ fun CalculatorButtonContainer(modifier: Modifier = Modifier,
             })
         }
 
-        Row() {
-            CalculatorButton(label = "+/-", {
-                onClickAction(Number(CalculatorNumeric.SIGN))
-            })
+        Row(
+            modifier = Modifier.padding(10.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly) {
             CalculatorButton(label = "0", {
                 onClickAction(Number(CalculatorNumeric.ZERO))
             })
@@ -98,10 +113,21 @@ fun CalculatorButtonContainer(modifier: Modifier = Modifier,
 
         }
 
-        Row() {
+        Row(modifier = Modifier.padding(10.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly) {
+            CalculatorButton(label = "+/-", {
+                onClickAction(Number(CalculatorNumeric.SIGN))
+            })
+
             CalculatorButton(label = "DEL", {
                 onClickAction(RemoveCommand(CalculatorRemoveCommand.DEL))
             })
         }
     }
+}
+
+@Composable
+@Preview
+fun CalculatorButtonContainerPreview() {
+    CalculatorButtonContainer(onClickAction = {(Number(CalculatorNumeric.NINE))})
 }
